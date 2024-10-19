@@ -1,0 +1,30 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+      - name: Cache Flutter SDK
+        uses: actions/cache@v3
+        with:
+          path: ~/.flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/.flutter/version') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+      - name: Get Flutter
+        run: flutter --version
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk
