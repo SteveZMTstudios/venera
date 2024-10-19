@@ -1,0 +1,35 @@
+name: Build APK
+
+on: [push, pull_request, workflow_dispatch]  # 触发条件，可以是 push 或 pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 运行环境
+
+    steps:
+    - uses: actions/checkout@v2  # 检出代码
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '2.8.1'  # 指定 Flutter 版本，根据需要修改
+
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'  # 指定 Java 版本
+
+    - name: Install dependencies
+      run: flutter pub get  # 安装依赖
+
+    - name: Run Flutter doctor
+      run: flutter doctor -v  # 运行 Flutter doctor 检查环境
+
+    - name: Build APK
+      run: cd android && ./gradlew assembleRelease  # 构建 APK
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-apk
+        path: android/app/build/outputs/apk/release/app-release.apk  # APK 文件路径
